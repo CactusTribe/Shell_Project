@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Shell_Project" default="default" basedir=".">
+	<target name="bundle">
+		<taskdef name="bundleapp"
+		classpath="lib/appbundler-1.0ea.jar"
+		classname="com.oracle.appbundler.AppBundlerTask"/>
+		<bundleapp
+			outputdirectory="dist"
+			name="Shell_Project"
+			displayname="Shell_Project"
+			identifier="com.company.Shell_Project"
+			shortversion="0.0.1"
+			version="0.0.1"
+			icon="icon.icns"
+			mainclassname="Shell_Project"
+			copyright=""
+			applicationCategory="public.app-category.puzzle-games">
+			<classpath file="dist/Shell_Project.jar"/>
+			<runtime dir="/Library/Java/JavaVirtualMachines/jdk1.8.0_05.jdk/Contents/Home"/>
+			<!-- Workaround since the icon parameter for bundleapp doesn't work -->
+			<option value="-Xdock:icon=Contents/Resources/${bundle.icon}"/>
+			<arch name="x86_64"/>
+			<arch name="i386"/>
+		</bundleapp>
+	</target>
+</project>
