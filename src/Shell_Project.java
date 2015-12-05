@@ -68,12 +68,7 @@ public class Shell_Project{
             Builtin.execute_commande_pwd(argv);
         }
         else if(argv.get(0).equals("cd")){
-            if(argv.size()<2)
-                System.out.println("Pas assez d'arguments -> cd <path>");
-            else if(argv.size()>2)
-                System.out.println("Trop d'arguments -> cd <path>");
-            else
-                Builtin.execute_commande_cd(argv);
+            Builtin.execute_commande_cd(argv);
         }
         else if(argv.get(0).equals("date")){
             Builtin.execute_commande_date(argv);

@@ -1,5 +1,8 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /* Classe Builtin
 *
@@ -29,15 +32,43 @@ public class Builtin{
         System.out.println(pwd);
     }
     
-    public static void execute_commande_cd(ArrayList<String> argv){
-        System.out.println("Execution de cd");        
-        File dossier = new File(System.getProperty("user.dir"));
-        if(argv.get(1).equals(".."))
-            System.setProperty("user.dir", dossier.getParentFile().toString());
+    public static void execute_commande_cd(ArrayList<String> argv){       
+        File currentDir = new File(System.getProperty("user.dir"));
+        File newDir;
+
+        if(argv.size() < 2)
+            System.out.println("Pas assez d'arguments -> cd <path>");
+        else if(argv.size() > 2)
+            System.out.println("Trop d'arguments -> cd <path>");
+        else{
+            if(argv.get(1).equals("..")){
+                try{
+                    System.setProperty("user.dir", currentDir.getAbsoluteFile().getParentFile().toString());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+            else{
+                newDir = new File(argv.get(1));
+
+                if(newDir.getAbsoluteFile().isDirectory()){
+                    System.setProperty("user.dir", newDir.getAbsoluteFile().toString());
+                }
+                else{
+                   System.out.println(newDir.toString() + " n'est pas un dossier."); 
+                }
+            }
+        }
     }
     
     public static void execute_commande_date(ArrayList<String> argv){
-        System.out.println("Execution de date");
+        SimpleDateFormat formater = null;
+        Date now = new Date();
+
+        if(argv.size() == 1)
+            formater = new SimpleDateFormat("yy-MM-dd");
+
+        System.out.println(formater.format(now));
     }
     
     public static void execute_commande_find(ArrayList<String> argv){
