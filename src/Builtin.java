@@ -1,8 +1,9 @@
 import java.io.File;
-import java.util.ArrayList;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* Classe Builtin
 *
@@ -32,21 +33,29 @@ public class Builtin{
         System.out.println(pwd);
     }
     
-    public static void execute_commande_cd(ArrayList<String> argv){       
+    public static void execute_commande_cd(ArrayList<String> argv){
+        String separator = System.getProperty("file.separator");        
         File currentDir = new File(System.getProperty("user.dir"));
         File newDir;
-
         if(argv.size() < 2)
             System.out.println("Pas assez d'arguments -> cd <path>");
         else if(argv.size() > 2)
             System.out.println("Trop d'arguments -> cd <path>");
         else{
-            if(argv.get(1).equals("..")){
-                try{
-                    System.setProperty("user.dir", currentDir.getAbsoluteFile().getParentFile().toString());
-                }catch (Exception e){
-                    e.printStackTrace();
+            Pattern p = Pattern.compile(String.format("(\\.\\.)(%s\\.\\.)*", separator));
+            Matcher m = p.matcher(argv.get(1));
+            if(m.matches()){
+                System.out.println("Match");
+                Pattern motif = Pattern.compile("(\\.\\.)");
+                Matcher recherche = motif.matcher(argv.get(1));
+                while(recherche.find()){
+                    try{
+                        currentDir = currentDir.getAbsoluteFile().getParentFile();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
+                System.setProperty("user.dir", currentDir.toString());
             }
             else{
                 newDir = new File(argv.get(1));
