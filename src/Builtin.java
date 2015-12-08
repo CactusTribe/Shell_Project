@@ -86,12 +86,12 @@ public class Builtin{
         Matcher m = motif.matcher(dateFormat);
 
         if(m.matches()){
-                // Suppression des caractères inutiles
+            // Suppression des caractères inutiles
             dateFormat = dateFormat.substring(1);
             dateFormat.replace("-","");
 
-                motif = Pattern.compile("%[dHmMY]");
-                m = motif.matcher(dateFormat);
+            motif = Pattern.compile("%[dHmMY]");
+            m = motif.matcher(dateFormat);
 
             StringBuffer sb = new StringBuffer();
             while(m.find()){
