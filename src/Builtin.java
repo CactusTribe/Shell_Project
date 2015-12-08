@@ -81,19 +81,21 @@ public class Builtin{
         else
             dateFormat = "+%Y-%m-%d";
 
-        String regex = "(?<=[+-])%[dHmMY]";
-        Pattern motif = Pattern.compile(regex);
+        // Test de l'argument
+        Pattern motif = Pattern.compile("[+](%[dHmMY]-?)*");
         Matcher m = motif.matcher(dateFormat);
 
-        System.out.println(m.matches());
-
-        if((dateFormat.charAt(0) == '+')){
+        if(m.matches()){
+                // Suppression des caractères inutiles
             dateFormat = dateFormat.substring(1);
+            dateFormat.replace("-","");
+
+                motif = Pattern.compile("%[dHmMY]");
+                m = motif.matcher(dateFormat);
 
             StringBuffer sb = new StringBuffer();
             while(m.find()){
                 String token = m.group();
-                System.out.println(token);
                 switch(token){
                     case "%Y":
                         m.appendReplacement(sb, "yy");
