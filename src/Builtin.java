@@ -128,7 +128,41 @@ public class Builtin{
     }
     
     public static void execute_commande_find(ArrayList<String> argv){
-        System.out.println("Execution de find");
+
+        if((argv.size() == 4) && (argv.get(2).equals("-name") || argv.get(2).equals("-iname"))){
+
+            File currentDir = new File(System.getProperty("user.dir"));
+            File newDir = new File(argv.get(1));
+
+            Matcher m;
+            Pattern regex;
+                
+            if(argv.get(2).equals("-iname"))
+                regex = Pattern.compile(argv.get(3), Pattern.CASE_INSENSITIVE);
+            else
+                regex = Pattern.compile(argv.get(3));
+
+            if(newDir.getAbsoluteFile().isDirectory()){
+                // On se déplace dans le dossier
+                System.setProperty("user.dir", newDir.getAbsoluteFile().toString());
+                String enfants[] = newDir.list();
+
+                for(String fils: enfants){
+                    m = regex.matcher(fils);
+                    if(m.matches())
+                        System.out.println(fils);
+                }
+
+                // Une fois fini on revient au dossier parent
+                System.setProperty("user.dir", currentDir.getAbsoluteFile().toString());
+            }
+            else{
+               System.out.println(newDir.toString() + " n'est pas un dossier."); 
+            }
+        }
+        else{
+            System.out.println("Usage: find <chemin> < -name | -iname > <expr. reg.>");
+        }
     }
     
 }
