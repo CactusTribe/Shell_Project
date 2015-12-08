@@ -71,13 +71,58 @@ public class Builtin{
     }
     
     public static void execute_commande_date(ArrayList<String> argv){
-        SimpleDateFormat formater = null;
         Date now = new Date();
+        SimpleDateFormat formater;
+        String dateFormat;
 
-        if(argv.size() == 1)
-            formater = new SimpleDateFormat("yy-MM-dd");
+        // Gestion du format par defaut
+        if(argv.size() > 1)
+            dateFormat = argv.get(1);
+        else
+            dateFormat = "+%Y-%m-%d";
 
-        System.out.println(formater.format(now));
+        String regex = "(?<=[+-])%[dHmMY]";
+        Pattern motif = Pattern.compile(regex);
+        Matcher m = motif.matcher(dateFormat);
+
+        System.out.println(m.matches());
+
+        if((dateFormat.charAt(0) == '+')){
+            dateFormat = dateFormat.substring(1);
+
+            StringBuffer sb = new StringBuffer();
+            while(m.find()){
+                String token = m.group();
+                System.out.println(token);
+                switch(token){
+                    case "%Y":
+                        m.appendReplacement(sb, "yy");
+                        break;
+                    case "%m":
+                        m.appendReplacement(sb, "MM");
+                        break;
+                    case "%d":
+                        m.appendReplacement(sb, "dd");
+                        break;
+                    case "%H":
+                        m.appendReplacement(sb, "H");
+                        break;
+                    case "%M":
+                        m.appendReplacement(sb, "m");
+                        break;
+                    default:
+                        break;
+                }
+            }
+            m.appendTail(sb);
+
+            dateFormat = sb.toString();
+            formater = new SimpleDateFormat(dateFormat);
+            System.out.println(formater.format(now));
+        }
+        else{
+            System.out.println("Usage: date [<format>=+%Y-%m-%d-%H-%M]");
+        }
     }
     
     public static void execute_commande_find(ArrayList<String> argv){
