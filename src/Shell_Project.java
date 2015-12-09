@@ -76,6 +76,9 @@ public class Shell_Project{
         else if(argv.get(0).equals("find")){
             Builtin.execute_commande_find(argv);
         }
+        else if(argv.get(0).equals("grep")){
+            Builtin.execute_commande_grep(argv);
+        }
         else{
             System.out.format("La commande %s n'existe pas.\n", argl);
         }

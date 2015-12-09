@@ -1,9 +1,11 @@
-import java.io.File;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Scanner;
+import java.util.NoSuchElementException;
 
 /* Classe Builtin
 *
@@ -162,6 +164,71 @@ public class Builtin{
         }
         else{
             System.out.println("Usage: find <chemin> < -name | -iname > <expr. reg.>");
+        }
+    }
+
+    public static void execute_commande_grep(ArrayList<String> argv){
+        ArrayList<File> fichiers = new ArrayList<File>();
+        Scanner sc = new Scanner(System.in);
+        Pattern motif;
+        Matcher m;
+
+        if(argv.size() == 2){
+            motif = Pattern.compile(argv.get(1));
+            String str;
+
+            while(true){
+                try{
+                    str = sc.nextLine();
+                    m = motif.matcher(str);
+                    if(m.matches()){
+                        System.out.println(str);
+                    }
+                }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
+                    break;
+                }
+            }
+        }
+        else if(argv.size() > 2){
+            File file;
+            motif = Pattern.compile(argv.get(1));
+
+            // Récupération des fichiers existants
+            for(int i=2; i<argv.size(); i++){
+
+                file = new File(argv.get(i));
+                if(file.exists())
+                    fichiers.add(file); 
+                else
+                    System.out.println("Le fichier " + argv.get(i) + " n'existe pas.");
+            }
+
+            // Lecture des fichiers
+            for(int i=0; i<fichiers.size(); i++){
+                try{
+                    // Ouverture du flux
+                    InputStream input =new FileInputStream(fichiers.get(i)); 
+                    InputStreamReader inputReader =new InputStreamReader(input);
+                    BufferedReader buffreader = new BufferedReader(inputReader);
+
+                    String ligne;
+                    while ((ligne = buffreader.readLine()) != null){
+                        // On matche la ligne 
+                        m = motif.matcher(ligne);
+                        if(m.matches()){
+                            System.out.println(ligne);
+                        }
+                    }
+
+                    buffreader.close(); 
+                }       
+                catch (Exception e){
+                    System.out.println(e.toString());
+                }
+            }
+        }
+        else{
+            System.out.println("grep <expr. reg.> [ <fich. 1> [ <fich.2> [ ... ] ] ]");
         }
     }
     
