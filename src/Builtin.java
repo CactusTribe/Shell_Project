@@ -7,16 +7,24 @@ import java.util.regex.Pattern;
 import java.util.Scanner;
 import java.util.NoSuchElementException;
 
-/* Classe Builtin
-*
-* Contient les commandes internes du shell (ls, ps, pwd, cd)
-*/
+/** Classe Builtin
+ *
+ * Contient les commandes internes du shell (ls, ps, pwd, cd)
+ */
 public class Builtin{
     
+    /**
+     * Quitte le Shell
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_exit(ArrayList<String> argv){
         System.exit(0);
     }
     
+    /**
+     * Liste les fichiers du répertoire courant
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_ls(ArrayList<String> argv){
         File dossier = new File(System.getProperty("user.dir"));
         String enfants[] = dossier.list();
@@ -26,15 +34,27 @@ public class Builtin{
         }
     }
     
+    /**
+     * Affiche les processus en cours d'exécution
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_ps(ArrayList<String> argv){
         System.out.println("Execution de ps");
     }
     
+    /**
+     * Affiche le répertoire courant
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_pwd(ArrayList<String> argv){
         String pwd = System.getProperty("user.dir");
         System.out.println(pwd);
     }
     
+    /**
+     * Change le dossier courant
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_cd(ArrayList<String> argv){
         String separator = System.getProperty("file.separator");        
         File currentDir = new File(System.getProperty("user.dir"));
@@ -72,6 +92,10 @@ public class Builtin{
         }
     }
     
+    /**
+     * Affiche la date en fonction du format donné
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_date(ArrayList<String> argv){
         Date now = new Date();
         SimpleDateFormat formater;
@@ -129,6 +153,10 @@ public class Builtin{
         }
     }
     
+    /**
+     * Cherche et affiche tout les fichiers dont le nom est matché avec la regex
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_find(ArrayList<String> argv){
 
         if((argv.size() == 4) && (argv.get(2).equals("-name") || argv.get(2).equals("-iname"))){
@@ -167,6 +195,10 @@ public class Builtin{
         }
     }
 
+    /**
+     * Affiche les lignes qui matches la regex, stdin ou bien dans des fichiers
+     * @param argv Arguments de la fonction
+     */
     public static void execute_commande_grep(ArrayList<String> argv){
         ArrayList<File> fichiers = new ArrayList<File>();
         Scanner sc = new Scanner(System.in);
@@ -176,7 +208,6 @@ public class Builtin{
         if(argv.size() == 2){
             motif = Pattern.compile(argv.get(1));
             String str;
-
             while(true){
                 try{
                     str = sc.nextLine();
@@ -231,5 +262,32 @@ public class Builtin{
             System.out.println("grep <expr. reg.> [ <fich. 1> [ <fich.2> [ ... ] ] ]");
         }
     }
-    
+
+    /**
+     * Permet de remplacer une chaine par une autre dans un fichier ou bien sur stdin
+     * @param argv Arguments de la fonction
+     */
+    public static void execute_commande_sed(ArrayList<String> argv){
+        Scanner sc = new Scanner(System.in);
+        File file;
+        Pattern motif;
+        Matcher m;
+
+        if(argv.size() == 2){
+            String str;
+            while(true){
+                try{
+                    str = sc.nextLine();
+                }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
+                    break;
+                }
+            }
+        }
+        else if(argv.size() == 3){
+
+        }
+        else{
+            System.out.println("sed <format> [<fichier>]"); 
+        }
+    } 
 }

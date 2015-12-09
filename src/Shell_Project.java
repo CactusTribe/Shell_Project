@@ -9,9 +9,9 @@ public class Shell_Project{
     private String argl; // Ligne de commande brute
     private ArrayList<String> argv; // Liste des arguments
     
-    /*
-    * Constructeur
-    */
+    /**
+     * Constructeur
+     */
     public Shell_Project(){
         sc = new Scanner(System.in);
         argv = new ArrayList<String>();
@@ -25,16 +25,16 @@ public class Shell_Project{
         }
     }
     
-    /*
-    * Affiche une nouvelle ligne pour la prochaine commande
-    */
+    /**
+     * Affiche une nouvelle ligne pour la prochaine commande
+     */
     public void display_prompt(){
         System.out.print("MyShell$ ");
     }
     
-    /*
-    * Stock la commande complete dans argl
-    */
+    /**
+     * Stock la commande complete dans argl
+     */
     public void read_command(){
         try{
             argl = sc.nextLine();
@@ -45,16 +45,16 @@ public class Shell_Project{
         }
     }
     
-    /*
-    * Découpe la commande en arguments distincts
-    */
+    /**
+     * Découpe la commande en arguments distincts
+     */
     public void tokenize_command(){
         argv = new ArrayList<String>(Arrays.asList(argl.split("\\s+")));
     }
     
-    /*
-    * Execute la commande contenue dans argl
-    */
+    /**
+     * Execute la commande contenue dans argl
+     */
     public void execute_command(){
         if(argv.get(0).equals("exit"))
             Builtin.execute_commande_exit(argv);
@@ -78,6 +78,9 @@ public class Shell_Project{
         }
         else if(argv.get(0).equals("grep")){
             Builtin.execute_commande_grep(argv);
+        }
+        else if(argv.get(0).equals("sed")){
+            Builtin.execute_commande_sed(argv);
         }
         else{
             System.out.format("La commande %s n'existe pas.\n", argl);
