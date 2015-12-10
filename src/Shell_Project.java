@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -8,6 +9,7 @@ public class Shell_Project{
     private Scanner sc;
     private String argl; // Ligne de commande brute
     private ArrayList<String> argv; // Liste des arguments
+    private LinkedList<Thread> procList; // Liste des processus
     
     /**
      * Constructeur
@@ -15,6 +17,7 @@ public class Shell_Project{
     public Shell_Project(){
         sc = new Scanner(System.in);
         argv = new ArrayList<String>();
+        procList = new LinkedList<>();
         
         // Boucle infinie du shell (S'arrête grâce à Ctrl+D ou bien exit)
         while(true){
@@ -62,7 +65,7 @@ public class Shell_Project{
             Builtin.execute_commande_ls(argv);
         }
         else if(argv.get(0).equals("ps")){
-            Builtin.execute_commande_ps(argv);
+            Builtin.execute_commande_ps(argv, procList);
         }
         else if(argv.get(0).equals("pwd")){
             Builtin.execute_commande_pwd(argv);
@@ -81,6 +84,27 @@ public class Shell_Project{
         }
         else if(argv.get(0).equals("sed")){
             Builtin.execute_commande_sed(argv);
+        }
+        else if(argv.get(0).equals("compteJusqua")){
+            Thread compteJusqua = new Thread()
+            {
+                @Override
+                public void run() {
+                    Builtin.execute_commande_compteJusqua(argv);
+                }
+            };
+            compteJusqua.setName("compteJusqua");
+            procList.add(compteJusqua);
+            compteJusqua.start();
+        }
+        else if(argv.get(0).equals("kill")){
+            new Thread()
+            {
+                @Override
+                public void run() {
+                    Builtin.execute_commande_kill(argv, procList);
+                }
+            }.start();
         }
         else{
             System.out.format("La commande %s n'existe pas.\n", argl);

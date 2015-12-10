@@ -1,11 +1,18 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Scanner;
-import java.util.NoSuchElementException;
 
 /** Classe Builtin
  *
@@ -38,8 +45,18 @@ public class Builtin{
      * Affiche les processus en cours d'exécution
      * @param argv Arguments de la fonction
      */
-    public static void execute_commande_ps(ArrayList<String> argv){
+    public static void execute_commande_ps(ArrayList<String> argv, LinkedList<Thread> procList){
         System.out.println("Execution de ps");
+        boolean empty = true;
+        for(Thread t : procList){
+            if(t.isAlive()){
+                System.out.println("Name : "+t.getName()+" - Pid : "+t.getId());
+                empty = false;
+            }
+        }
+        if(empty){
+            System.out.println("Aucune commande en cours d'execution");
+        }
     }
     
     /**
@@ -56,7 +73,7 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_cd(ArrayList<String> argv){
-        String separator = System.getProperty("file.separator");        
+        String separator = System.getProperty("file.separator");
         File currentDir = new File(System.getProperty("user.dir"));
         File newDir;
         if(argv.size() < 2)
@@ -81,12 +98,12 @@ public class Builtin{
             }
             else{
                 newDir = new File(argv.get(1));
-
+                
                 if(newDir.getAbsoluteFile().isDirectory()){
                     System.setProperty("user.dir", newDir.getAbsoluteFile().toString());
                 }
                 else{
-                   System.out.println(newDir.toString() + " n'est pas un dossier."); 
+                    System.out.println(newDir.toString() + " n'est pas un dossier.");
                 }
             }
         }
@@ -100,25 +117,25 @@ public class Builtin{
         Date now = new Date();
         SimpleDateFormat formater;
         String dateFormat;
-
+        
         // Gestion du format par defaut
         if(argv.size() > 1)
             dateFormat = argv.get(1);
         else
             dateFormat = "+%Y-%m-%d";
-
+        
         // Test de l'argument
         Pattern motif = Pattern.compile("[+](%[dHmMY]-?)*");
         Matcher m = motif.matcher(dateFormat);
-
+        
         if(m.matches()){
             // Suppression des caractères inutiles
             dateFormat = dateFormat.substring(1);
             dateFormat.replace("-","");
-
+            
             motif = Pattern.compile("%[dHmMY]");
             m = motif.matcher(dateFormat);
-
+            
             StringBuffer sb = new StringBuffer();
             while(m.find()){
                 String token = m.group();
@@ -143,7 +160,7 @@ public class Builtin{
                 }
             }
             m.appendTail(sb);
-
+            
             dateFormat = sb.toString();
             formater = new SimpleDateFormat(dateFormat);
             System.out.println(formater.format(now));
@@ -158,43 +175,43 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_find(ArrayList<String> argv){
-
+        
         if((argv.size() == 4) && (argv.get(2).equals("-name") || argv.get(2).equals("-iname"))){
-
+            
             File currentDir = new File(System.getProperty("user.dir"));
             File newDir = new File(argv.get(1));
-
+            
             Matcher m;
             Pattern regex;
-                
+            
             if(argv.get(2).equals("-iname"))
                 regex = Pattern.compile(argv.get(3), Pattern.CASE_INSENSITIVE);
             else
                 regex = Pattern.compile(argv.get(3));
-
+            
             if(newDir.getAbsoluteFile().isDirectory()){
                 // On se déplace dans le dossier
                 System.setProperty("user.dir", newDir.getAbsoluteFile().toString());
                 String enfants[] = newDir.list();
-
+                
                 for(String fils: enfants){
                     m = regex.matcher(fils);
                     if(m.matches())
                         System.out.println(fils);
                 }
-
+                
                 // Une fois fini on revient au dossier parent
                 System.setProperty("user.dir", currentDir.getAbsoluteFile().toString());
             }
             else{
-               System.out.println(newDir.toString() + " n'est pas un dossier."); 
+                System.out.println(newDir.toString() + " n'est pas un dossier.");
             }
         }
         else{
             System.out.println("Usage: find <chemin> < -name | -iname > <expr. reg.>");
         }
     }
-
+    
     /**
      * Affiche les lignes qui matches la regex, stdin ou bien dans des fichiers
      * @param argv Arguments de la fonction
@@ -204,7 +221,7 @@ public class Builtin{
         Scanner sc = new Scanner(System.in);
         Pattern motif;
         Matcher m;
-
+        
         if(argv.size() == 2){
             motif = Pattern.compile(argv.get(1));
             String str;
@@ -223,36 +240,36 @@ public class Builtin{
         else if(argv.size() > 2){
             File file;
             motif = Pattern.compile(argv.get(1));
-
+            
             // Récupération des fichiers existants
             for(int i=2; i<argv.size(); i++){
-
+                
                 file = new File(argv.get(i));
                 if(file.exists())
-                    fichiers.add(file); 
+                    fichiers.add(file);
                 else
                     System.out.println("Le fichier " + argv.get(i) + " n'existe pas.");
             }
-
+            
             // Lecture des fichiers
             for(int i=0; i<fichiers.size(); i++){
                 try{
                     // Ouverture du flux
-                    InputStream input =new FileInputStream(fichiers.get(i)); 
+                    InputStream input =new FileInputStream(fichiers.get(i));
                     InputStreamReader inputReader =new InputStreamReader(input);
                     BufferedReader buffreader = new BufferedReader(inputReader);
-
+                    
                     String ligne;
                     while ((ligne = buffreader.readLine()) != null){
-                        // On matche la ligne 
+                        // On matche la ligne
                         m = motif.matcher(ligne);
                         if(m.matches()){
                             System.out.println(ligne);
                         }
                     }
-
-                    buffreader.close(); 
-                }       
+                    
+                    buffreader.close();
+                }
                 catch (Exception e){
                     System.out.println(e.toString());
                 }
@@ -262,7 +279,7 @@ public class Builtin{
             System.out.println("grep <expr. reg.> [ <fich. 1> [ <fich.2> [ ... ] ] ]");
         }
     }
-
+    
     /**
      * Permet de remplacer une chaine par une autre dans un fichier ou bien sur stdin
      * @param argv Arguments de la fonction
@@ -272,7 +289,7 @@ public class Builtin{
         File file;
         Pattern motif;
         Matcher m;
-
+        
         if(argv.size() == 2){
             String str;
             while(true){
@@ -284,10 +301,52 @@ public class Builtin{
             }
         }
         else if(argv.size() == 3){
-
+            
         }
         else{
-            System.out.println("sed <format> [<fichier>]"); 
+            System.out.println("sed <format> [<fichier>]");
         }
-    } 
+    }
+    
+    /**
+     * Permet d'afficher les <entier> plus petits nombres entiers dans l'ordre et à raison d'un par seconde
+     * @param argv Arguments de la fonction
+     */
+    public static void execute_commande_compteJusqua(ArrayList<String> argv){
+        if(argv.size()!=2 && argv.size()!=3){
+            System.out.println("compteJusqua <entier> [<format>=%d\\n]");
+        }
+        else{
+            System.out.println("PID = "+Thread.currentThread().getId());
+            String format = (argv.size()==3)?argv.get(2):"%d\n";
+            int n = Integer.parseInt(argv.get(1));
+            for(int i=0; i<=n; i++){
+                try {
+                    System.out.print(String.format(format, i));
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Builtin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Permet d'interrompre le processus correspondant au <pid> passé en argument
+     * @param argv Arguments de la fonction
+     */
+    public static void execute_commande_kill(ArrayList<String> argv, LinkedList<Thread> procList){
+        if(argv.size() != 2){
+            System.out.println("kill <pid>");
+        }
+        else{
+            System.out.println("Execution de kill "+argv.get(1));
+            for(Thread t : procList){
+                if(t.getId()==Integer.parseInt(argv.get(1))){
+                    t.stop();
+                    procList.remove(t);
+                }
+            }
+        }
+    }
 }
