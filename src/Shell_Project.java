@@ -9,7 +9,7 @@ public class Shell_Project{
     private Scanner sc;
     private String argl; // Ligne de commande brute
     private ArrayList<String> argv; // Liste des arguments
-    private LinkedList<Thread> procList; // Liste des processus
+    static LinkedList<Thread> procList; // Liste des processus
     
     /**
      * Constructeur
@@ -86,25 +86,10 @@ public class Shell_Project{
             Builtin.execute_commande_sed(argv);
         }
         else if(argv.get(0).equals("compteJusqua")){
-            Thread compteJusqua = new Thread()
-            {
-                @Override
-                public void run() {
-                    Builtin.execute_commande_compteJusqua(argv);
-                }
-            };
-            compteJusqua.setName("compteJusqua");
-            procList.add(compteJusqua);
-            compteJusqua.start();
+            Builtin.execute_commande_compteJusqua(argv);
         }
         else if(argv.get(0).equals("kill")){
-            new Thread()
-            {
-                @Override
-                public void run() {
-                    Builtin.execute_commande_kill(argv, procList);
-                }
-            }.start();
+            Builtin.execute_commande_kill(argv, procList);
         }
         else{
             System.out.format("La commande %s n'existe pas.\n", argl);

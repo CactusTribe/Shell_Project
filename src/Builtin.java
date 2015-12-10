@@ -313,22 +313,31 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_compteJusqua(ArrayList<String> argv){
-        if(argv.size()!=2 && argv.size()!=3){
-            System.out.println("compteJusqua <entier> [<format>=%d\\n]");
-        }
-        else{
-            System.out.println("PID = "+Thread.currentThread().getId());
-            String format = (argv.size()==3)?argv.get(2):"%d\n";
-            int n = Integer.parseInt(argv.get(1));
-            for(int i=0; i<=n; i++){
-                try {
-                    System.out.print(String.format(format, i));
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Builtin.class.getName()).log(Level.SEVERE, null, ex);
+        Thread compteJusqua = new Thread()
+        {
+            @Override
+            public void run() {
+                if(argv.size()!=2 && argv.size()!=3){
+                    System.out.println("compteJusqua <entier> [<format>=%d\\n]");
+                }
+                else{
+                    System.out.println("PID = "+Thread.currentThread().getId());
+                    String format = (argv.size()==3)?argv.get(2):"%d\n";
+                    int n = Integer.parseInt(argv.get(1));
+                    for(int i=0; i<=n; i++){
+                        try {
+                            System.out.print(String.format(format, i));
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Builtin.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
             }
-        }
+        };
+        compteJusqua.setName("compteJusqua");
+        compteJusqua.start();
+        Shell_Project.procList.add(compteJusqua);
     }
     
     /**
@@ -336,17 +345,23 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_kill(ArrayList<String> argv, LinkedList<Thread> procList){
-        if(argv.size() != 2){
-            System.out.println("kill <pid>");
-        }
-        else{
-            System.out.println("Execution de kill "+argv.get(1));
-            for(Thread t : procList){
-                if(t.getId()==Integer.parseInt(argv.get(1))){
-                    t.stop();
-                    procList.remove(t);
+        new Thread()
+        {
+            @Override
+            public void run() {
+                if(argv.size() != 2){
+                    System.out.println("kill <pid>");
+                }
+                else{
+                    System.out.println("Execution de kill "+argv.get(1));
+                    for(Thread t : procList){
+                        if(t.getId()==Integer.parseInt(argv.get(1))){
+                            t.stop();
+                            procList.remove(t);
+                        }
+                    }
                 }
             }
-        }
+        }.start();
     }
 }
