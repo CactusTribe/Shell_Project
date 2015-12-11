@@ -1,7 +1,9 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -284,7 +286,7 @@ public class Builtin{
      */
     public static void execute_commande_sed(ArrayList<String> argv){
         Scanner sc = new Scanner(System.in);
-        File file;
+        File file, fileOut;
         Pattern motif;
         Matcher m;
         
@@ -318,12 +320,14 @@ public class Builtin{
                 // Fichier
                 else if(argv.size() == 3){
                     file = new File(argv.get(2));
+                    fileOut = new File(argv.get(2)+"bis");
 
                     if(file.exists()){ // Si le fichier existe
                         if(!file.isDirectory()){ // Que ce n'est pas un dossier 
                             try{
-                                // Ouverture du flux
+                                // Ouverture des flux de lecture / ecriture
                                 BufferedReader in = new BufferedReader(new FileReader(file));
+                                BufferedWriter out = new BufferedWriter(new FileWriter(fileOut));
                                 
                                 String ligne;
                                 while (in.ready()){
@@ -335,9 +339,16 @@ public class Builtin{
                                     else{
                                         ligne = ligne.replaceFirst(m.group("ch1"), m.group("ch2"));
                                     }
-                                    System.out.println(ligne);
-                                }        
+                                    // Ecriture
+                                    out.write(ligne);
+                                    out.newLine();
+                                }
+                                out.close();        
                                 in.close();
+
+                                // On renome le fichier
+                                fileOut.createNewFile();
+                                fileOut.renameTo(file);
                             }
                             catch (Exception e){
                                 System.out.println(e.toString());
