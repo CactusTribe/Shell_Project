@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -255,20 +254,19 @@ public class Builtin{
             for(int i=0; i<fichiers.size(); i++){
                 try{
                     // Ouverture du flux
-                    InputStream input =new FileInputStream(fichiers.get(i));
-                    InputStreamReader inputReader =new InputStreamReader(input);
-                    BufferedReader buffreader = new BufferedReader(inputReader);
+                    BufferedReader in = new BufferedReader(new FileReader(fichiers.get(i)));
                     
                     String ligne;
-                    while ((ligne = buffreader.readLine()) != null){
+                    while (in.ready()){
                         // On matche la ligne
+                        ligne = in.readLine();
                         m = motif.matcher(ligne);
                         if(m.matches()){
                             System.out.println(ligne);
                         }
                     }
                     
-                    buffreader.close();
+                    in.close();
                 }
                 catch (Exception e){
                     System.out.println(e.toString());
@@ -290,43 +288,73 @@ public class Builtin{
         Pattern motif;
         Matcher m;
         
-        if(argv.size() == 2){
-            // Entrée standard
+        if(!(argv.size() >= 2))
+            System.out.println("sed <format> [<fichier>]");
+        else{
             motif = Pattern.compile("^s(?<sep>[/:|])(?<ch1>[^/:|]*)\\k<sep>(?<ch2>[^/:|]*)\\k<sep>(?<ch3>[^/:|]*)$");
             m = motif.matcher(argv.get(1));
 
-            if(m.matches()){
-                String str;
-                while(true){
-                    try{
-                        str = sc.nextLine();
-                        if(m.group("ch3").equals("g")){
-                            str = str.replaceAll(m.group("ch1"), m.group("ch2"));
+            if(!m.matches())
+                System.out.println("<format> = s<separator><regexp1><separator><chaine1><separator><chaine2>");
+            else{
+                // Entrée standard
+                if(argv.size() == 2){
+                    String str;
+                    while(true){
+                        try{
+                            str = sc.nextLine();
+                            if(m.group("ch3").equals("g")){
+                                str = str.replaceAll(m.group("ch1"), m.group("ch2"));
+                            }
+                            else{
+                                str = str.replaceFirst(m.group("ch1"), m.group("ch2"));
+                            }
+                            System.out.println(str);
+                        }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
+                            break;
                         }
-                        else{
-                            str = str.replaceFirst(m.group("ch1"), m.group("ch2"));
-                        }
-                        System.out.println(str);
-                    }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
-                        break;
                     }
                 }
-            }
-            else{
-                System.out.println("<format> = s<separator><regexp1><separator><chaine1><separator><chaine2>");
-            }
+                // Fichier
+                else if(argv.size() == 3){
+                    file = new File(argv.get(2));
 
-        }
-        else if(argv.size() == 3){
-            // Fichier
-        }
-        else{
-            System.out.println("sed <format> [<fichier>]");
-        }
+                    if(file.exists()){ // Si le fichier existe
+                        if(!file.isDirectory()){ // Que ce n'est pas un dossier 
+                            try{
+                                // Ouverture du flux
+                                BufferedReader in = new BufferedReader(new FileReader(file));
+                                
+                                String ligne;
+                                while (in.ready()){
+                                    // On matche la ligne
+                                    ligne = in.readLine();
+                                    if(m.group("ch3").equals("g")){
+                                        ligne = ligne.replaceAll(m.group("ch1"), m.group("ch2"));
+                                    }
+                                    else{
+                                        ligne = ligne.replaceFirst(m.group("ch1"), m.group("ch2"));
+                                    }
+                                    System.out.println(ligne);
+                                }        
+                                in.close();
+                            }
+                            catch (Exception e){
+                                System.out.println(e.toString());
+                            }
+                        }
+                        else
+                            System.out.println(argv.get(2) + " est un dossier.");
+                    }
+                    else
+                        System.out.println("Le fichier " + argv.get(2) + " n'existe pas.");
+                }
+            }
+        }    
     }
     
     /**
-     * Permet d'afficher les <entier> plus petits nombres entiers dans l'ordre et à raison d'un par seconde
+     * Permet d'afficher les entiers plus petits nombres entiers dans l'ordre et à raison d'un par seconde
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_compteJusqua(ArrayList<String> argv){
@@ -358,7 +386,7 @@ public class Builtin{
     }
     
     /**
-     * Permet d'interrompre le processus correspondant au <pid> passé en argument
+     * Permet d'interrompre le processus correspondant au pid passé en argument
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_kill(ArrayList<String> argv, LinkedList<Thread> procList){
