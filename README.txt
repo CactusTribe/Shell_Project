@@ -1,7 +1,7 @@
 #**************************************************#
 # Name : Shell_Project
 # Version : 0.0.1
-# Auteurs : 
+# Auteurs : Lefranc Joaquim, Poisson Arthur
 #**************************************************#
 
 MAKEFILE RULES :
@@ -12,14 +12,5 @@ MAKEFILE RULES :
  - make jar : Compile l'archive jar
  - make tar : Archive le projet
  - make doc : Compile la java doc
- - make macos : Construit l'application autonome(OSX)
  - make clean : Supprime les .class
 ----------------------------------------------------
-
-RELEASE NOTES :
-#**************************************************#
- v0.0.1 : 
-----------------------------------------------------
- - Création du dossier.
-----------------------------------------------------
-#**************************************************#

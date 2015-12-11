@@ -84,8 +84,9 @@ public class Builtin{
         else{
             Pattern p = Pattern.compile(String.format("(\\.\\.)(%s\\.\\.)*", separator));
             Matcher m = p.matcher(argv.get(1));
+
             if(m.matches()){
-                System.out.println("Match");
+                
                 Pattern motif = Pattern.compile("(\\.\\.)");
                 Matcher recherche = motif.matcher(argv.get(1));
                 while(recherche.find()){
