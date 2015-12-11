@@ -1,0 +1,22 @@
+%!Adobe-FontList 1.14
+%Locale:0x409
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:Calibri-BoldItalic
+FamilyName:Calibri
+StyleName:Bold Italic
+MenuName:Calibri
+StyleBits:3
+WeightClass:700
+WidthClass:5
+AngleClass:1
+FullName:Calibri Bold Italic
+WritingScript:Roman
+OutlineFileName:\Calibri Bold Italic.ttf
+DataFormat:sfntData
+FileLength:867288
+FileModTime:1278400713
+%EndFont
+
