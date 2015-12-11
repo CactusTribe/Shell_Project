@@ -291,17 +291,34 @@ public class Builtin{
         Matcher m;
         
         if(argv.size() == 2){
-            String str;
-            while(true){
-                try{
-                    str = sc.nextLine();
-                }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
-                    break;
+            // Entrée standard
+            motif = Pattern.compile("^s(?<sep>[/:|])(?<ch1>[^/:|]*)\\k<sep>(?<ch2>[^/:|]*)\\k<sep>(?<ch3>[^/:|]*)$");
+            m = motif.matcher(argv.get(1));
+
+            if(m.matches()){
+                String str;
+                while(true){
+                    try{
+                        str = sc.nextLine();
+                        if(m.group("ch3").equals("g")){
+                            str = str.replaceAll(m.group("ch1"), m.group("ch2"));
+                        }
+                        else{
+                            str = str.replaceFirst(m.group("ch1"), m.group("ch2"));
+                        }
+                        System.out.println(str);
+                    }catch (NoSuchElementException e){ // Exception levé lors de Ctrl+D
+                        break;
+                    }
                 }
             }
+            else{
+                System.out.println("<format> = s<separator><regexp1><separator><chaine1><separator><chaine2>");
+            }
+
         }
         else if(argv.size() == 3){
-            
+            // Fichier
         }
         else{
             System.out.println("sed <format> [<fichier>]");
