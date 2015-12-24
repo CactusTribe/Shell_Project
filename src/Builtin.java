@@ -390,7 +390,7 @@ public class Builtin{
     public static void execute_commande_sed(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            
+
             Thread sed = new Thread(){
                 @Override
                 public void run() {
@@ -487,6 +487,7 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_compteJusqua(ArrayList<String> argv){
+        boolean affichage = true;
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
 
@@ -502,16 +503,20 @@ public class Builtin{
             Shell_Project.procList.add(compteJusqua);
         }
         else{
-            if(argv.size()!=2 && argv.size()!=3){
+            if(argv.size() < 2){
                 System.out.println("compteJusqua <entier> [<format>=%d\\n]");
             }
             else{
                 System.out.println("PID = "+Thread.currentThread().getId());
+                if(Thread.currentThread().getId() != 1)
+                    affichage = false;
+                
                 String format = (argv.size()==3)?argv.get(2):"%d\n";
                 int n = Integer.parseInt(argv.get(1));
                 for(int i=0; i<=n; i++){
                     try {
-                        System.out.print(String.format(format, i));
+                        if(affichage)
+                            System.out.print(String.format(format, i));
                         Thread.sleep(1000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Builtin.class.getName()).log(Level.SEVERE, null, ex);
