@@ -35,8 +35,8 @@ public class Builtin{
     public static void execute_commande_ls(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread ls = new Thread()
-            {
+
+            Thread ls = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_ls(argv);
@@ -63,8 +63,8 @@ public class Builtin{
     public static void execute_commande_ps(ArrayList<String> argv, LinkedList<Thread> procList){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread ps = new Thread()
-            {
+
+            Thread ps = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_ps(argv, procList);
@@ -75,7 +75,6 @@ public class Builtin{
             Shell_Project.procList.add(ps);
         }
         else{
-            System.out.println("Execution de ps");
             boolean empty = true;
             for(Thread t : procList){
                 if(t.isAlive()){
@@ -96,8 +95,8 @@ public class Builtin{
     public static void execute_commande_pwd(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread pwd = new Thread()
-            {
+
+            Thread pwd = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_pwd(argv);
@@ -120,8 +119,8 @@ public class Builtin{
     public static void execute_commande_cd(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread cd = new Thread()
-            {
+
+            Thread cd = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_cd(argv);
@@ -177,8 +176,8 @@ public class Builtin{
     public static void execute_commande_date(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread date = new Thread()
-            {
+
+            Thread date = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_date(argv);
@@ -253,8 +252,8 @@ public class Builtin{
     public static void execute_commande_find(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread find = new Thread()
-            {
+
+            Thread find = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_find(argv);
@@ -309,8 +308,8 @@ public class Builtin{
     public static void execute_commande_grep(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread grep = new Thread()
-            {
+
+            Thread grep = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_grep(argv);
@@ -391,8 +390,8 @@ public class Builtin{
     public static void execute_commande_sed(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread sed = new Thread()
-            {
+            
+            Thread sed = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_sed(argv);
@@ -490,13 +489,14 @@ public class Builtin{
     public static void execute_commande_compteJusqua(ArrayList<String> argv){
         if(argv.get(argv.size()-1).equals("&")){
             argv.remove(argv.size()-1);
-            Thread compteJusqua = new Thread()
-            {
+
+            Thread compteJusqua = new Thread(){
                 @Override
                 public void run() {
                     execute_commande_compteJusqua(argv);
                 }
             };
+
             compteJusqua.setName("compteJusqua");
             compteJusqua.start();
             Shell_Project.procList.add(compteJusqua);
@@ -526,15 +526,13 @@ public class Builtin{
      * @param argv Arguments de la fonction
      */
     public static void execute_commande_kill(ArrayList<String> argv, LinkedList<Thread> procList){
-        new Thread()
-        {
-            @Override
-            public void run() {
-                if(argv.size() != 2){
-                    System.out.println("kill <pid>");
-                }
-                else{
-                    System.out.println("Execution de kill "+argv.get(1));
+        if(argv.size() != 2){
+            System.out.println("kill <pid>");
+        }
+        else{
+            Thread kill = new Thread(){
+                @Override
+                public void run() {  
                     for(Thread t : procList){
                         if(t.getId()==Integer.parseInt(argv.get(1))){
                             t.stop();
@@ -542,7 +540,10 @@ public class Builtin{
                         }
                     }
                 }
-            }
-        }.start();
+            };
+
+            System.out.println("Execution de kill "+argv.get(1));
+            kill.start();
+        }      
     }
 }
